@@ -62,8 +62,8 @@ func TestTokenize(t *testing.T) {
 		for i, token := range tokens {
 			expected := test.expected[i]
 			if token.Kind != expected.Kind {
-				t.Errorf("Token kind mismatch (Actual: %d, Expected: %d)",
-					token.Kind, expected.Kind)
+				t.Errorf("Token kind mismatch (Actual: %s, Expected: %s)",
+					token, expected)
 			}
 			if token.Kind == Int && token.Val != expected.Val {
 				t.Errorf("Int token value mismatch (Actual: %d, Expected: %d)",

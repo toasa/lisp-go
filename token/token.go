@@ -1,6 +1,7 @@
 package token
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -58,4 +59,17 @@ func Tokenize(program string) []Token {
 	}
 
 	return tokens
+}
+
+func (t Token) String() string {
+	switch t.Kind {
+	case Int:
+		return fmt.Sprintf("Int(%d)", t.Val)
+	case Symbol:
+		return fmt.Sprintf("Symbol(%s)", t.Symbol)
+	case LParen:
+		return "LParen"
+	default:
+		return "RParen"
+	}
 }
