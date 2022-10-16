@@ -54,7 +54,7 @@ func (o Object) String() string {
 	switch o.Kind {
 	case Int:
 		return fmt.Sprintf("%d", o.Val)
-	default: // List
+	case List: // List
 		var l strings.Builder
 
 		l.WriteString("(")
@@ -67,5 +67,7 @@ func (o Object) String() string {
 		l.WriteString(")")
 
 		return l.String()
+	default:
+		return ""
 	}
 }
