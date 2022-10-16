@@ -33,7 +33,7 @@ func Equal(o1, o2 Object) bool {
 	switch o1.Kind {
 	case Int:
 		return o1.Val == o2.Val
-	default: // Kind == List
+	case List:
 		if len(o1.List) != len(o2.List) {
 			return false
 		}
@@ -45,6 +45,9 @@ func Equal(o1, o2 Object) bool {
 		}
 		return true
 	}
+
+	// (TODO?) Invalid object type, how to handle it?
+	return false
 }
 
 func (o Object) String() string {
