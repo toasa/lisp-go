@@ -15,13 +15,24 @@ func parseList(tokens []token.Token) (Object, error) {
 	if t.Kind != token.LParen {
 		return Object{}, fmt.Errorf("Expected LParen, got %s", t)
 	}
+	tokens = tokens[1:]
 
 	list := []Object{}
-	t = tokens[1]
-	if t.Kind != token.Int {
-		return Object{}, fmt.Errorf("List contains Int only, but got %s", t)
+	for len(tokens) > 0 {
+		t = tokens[0]
+		tokens = tokens[1:]
+
+		switch t.Kind {
+		case token.Int:
+			list = append(list, IntObject(t.Val))
+		case token.Symbol:
+			list = append(list, SymbolObject(t.Symbol))
+		case token.RParen:
+			return ListObject(list), nil
+		default:
+			return Object{}, fmt.Errorf("Invalid token %s", t)
+		}
 	}
-	list = append(list, IntObject(t.Val))
 
 	return ListObject(list), nil
 }
