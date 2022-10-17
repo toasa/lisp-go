@@ -17,6 +17,8 @@ func evalObj(obj Object) (Object, error) {
 		return VoidObject(), nil
 	case List:
 		return evalList(obj)
+	case Bool:
+		return BoolObject(obj.Bool), nil
 	}
 	return Object{}, fmt.Errorf("Invalid Object: %s", obj)
 }
