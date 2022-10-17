@@ -35,6 +35,34 @@ func TestEval(t *testing.T) {
 				}),
 			expected: IntObject(12),
 		},
+		{
+			input: ListObject(
+				[]Object{
+					SymbolObject("+"),
+					IntObject(2),
+					ListObject(
+						[]Object{
+							SymbolObject("*"),
+							IntObject(3),
+							IntObject(4),
+						}),
+				}),
+			expected: IntObject(14),
+		},
+		{
+			input: ListObject(
+				[]Object{
+					SymbolObject("+"),
+					ListObject(
+						[]Object{
+							SymbolObject("*"),
+							IntObject(2),
+							IntObject(3),
+						}),
+					IntObject(4),
+				}),
+			expected: IntObject(10),
+		},
 	}
 
 	for _, test := range tests {
