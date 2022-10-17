@@ -31,6 +31,8 @@ func evalList(list Object) (Object, error) {
 		switch head.Symbol {
 		case "+", "-", "*", "/", "<", ">", "=", "!=":
 			return evalBinaryOp(list)
+		case "if":
+			return evalIf(list)
 		}
 	default:
 		return Object{}, fmt.Errorf("Unsupport list %s", list)
@@ -90,5 +92,23 @@ func evalBinaryOp(list Object) (Object, error) {
 		}
 	default:
 		return Object{}, fmt.Errorf("Operator must be a symbol")
+	}
+}
+
+func evalIf(list Object) (Object, error) {
+	if len(list.List) != 4 {
+		return Object{}, fmt.Errorf("Invalid number of arguments for if statement")
+	}
+
+	cond_obj, _ := evalObj(list.List[1])
+	if cond_obj.Kind != Bool {
+		return Object{}, fmt.Errorf("Condition must be boolean")
+	}
+	cond := cond_obj.Bool
+
+	if cond {
+		return evalObj(list.List[2])
+	} else {
+		return evalObj(list.List[3])
 	}
 }
