@@ -9,6 +9,7 @@ type ObjectKind int
 
 const (
 	Int ObjectKind = iota
+	Void
 	List
 	Symbol
 	Bool
@@ -24,6 +25,10 @@ type Object struct {
 
 func IntObject(n int) Object {
 	return Object{Kind: Int, Val: n}
+}
+
+func VoidObject() Object {
+	return Object{Kind: Void}
 }
 
 func ListObject(list []Object) Object {
@@ -45,6 +50,8 @@ func Equal(o1, o2 Object) bool {
 	switch o1.Kind {
 	case Int:
 		return o1.Val == o2.Val
+	case Void:
+		return true
 	case List:
 		if len(o1.List) != len(o2.List) {
 			return false
@@ -70,6 +77,8 @@ func (o Object) String() string {
 	switch o.Kind {
 	case Int:
 		return fmt.Sprintf("%d", o.Val)
+	case Void:
+		return "Void"
 	case List: // List
 		var l strings.Builder
 
