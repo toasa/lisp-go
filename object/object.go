@@ -11,6 +11,7 @@ const (
 	Int ObjectKind = iota
 	List
 	Symbol
+	Bool
 )
 
 type Object struct {
@@ -18,6 +19,7 @@ type Object struct {
 	Val    int
 	List   []Object
 	Symbol string
+	Bool   bool
 }
 
 func IntObject(n int) Object {
@@ -30,6 +32,10 @@ func ListObject(list []Object) Object {
 
 func SymbolObject(s string) Object {
 	return Object{Kind: Symbol, Symbol: s}
+}
+
+func BoolObject(b bool) Object {
+	return Object{Kind: Bool, Bool: b}
 }
 
 func Equal(o1, o2 Object) bool {
@@ -52,6 +58,8 @@ func Equal(o1, o2 Object) bool {
 		return true
 	case Symbol:
 		return o1.Symbol == o2.Symbol
+	case Bool:
+		return o1.Bool == o2.Bool
 	}
 
 	// (TODO?) Invalid object type, how to handle it?
@@ -77,6 +85,8 @@ func (o Object) String() string {
 		return l.String()
 	case Symbol:
 		return o.Symbol
+	case Bool:
+		return fmt.Sprintf("%v", o.Bool)
 	default:
 		return ""
 	}
