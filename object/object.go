@@ -23,6 +23,8 @@ type Object struct {
 	Bool   bool
 }
 
+var None Object = Object{}
+
 func IntObject(n int) Object {
 	return Object{Kind: Int, Val: n}
 }

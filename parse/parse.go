@@ -13,7 +13,7 @@ func Parse(tokens []token.Token) (Object, error) {
 func parseList(tokens []token.Token) (Object, error) {
 	t := tokens[0]
 	if t.Kind != token.LParen {
-		return Object{}, fmt.Errorf("Expected LParen, got %s", t)
+		return None, fmt.Errorf("Expected LParen, got %s", t)
 	}
 	tokens = tokens[1:]
 
@@ -30,7 +30,7 @@ func parseList(tokens []token.Token) (Object, error) {
 		case token.RParen:
 			return ListObject(list), nil
 		default:
-			return Object{}, fmt.Errorf("Invalid token %s", t)
+			return None, fmt.Errorf("Invalid token %s", t)
 		}
 	}
 

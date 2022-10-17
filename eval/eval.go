@@ -21,7 +21,7 @@ func evalObj(obj Object, env *Env) (Object, error) {
 	case Bool:
 		return BoolObject(obj.Bool), nil
 	}
-	return Object{}, fmt.Errorf("Invalid Object: %s", obj)
+	return None, fmt.Errorf("Invalid Object: %s", obj)
 }
 
 func evalList(list Object, env *Env) (Object, error) {
@@ -36,7 +36,7 @@ func evalList(list Object, env *Env) (Object, error) {
 			return evalIf(list, env)
 		}
 	default:
-		return Object{}, fmt.Errorf("Unsupport list %s", list)
+		return None, fmt.Errorf("Unsupport list %s", list)
 	}
 
 	new_list := []Object{}
@@ -52,7 +52,7 @@ func evalList(list Object, env *Env) (Object, error) {
 
 func evalBinaryOp(list Object, env *Env) (Object, error) {
 	if len(list.List) != 3 {
-		return Object{}, fmt.Errorf("Invalid number of arguments for infix operator")
+		return None, fmt.Errorf("Invalid number of arguments for infix operator")
 	}
 
 	op := list.List[0]
@@ -60,10 +60,10 @@ func evalBinaryOp(list Object, env *Env) (Object, error) {
 	rhs, _ := evalObj(list.List[2], env)
 
 	if lhs.Kind != Int {
-		return Object{}, fmt.Errorf("Left operand must be an integer (%s)", lhs)
+		return None, fmt.Errorf("Left operand must be an integer (%s)", lhs)
 	}
 	if rhs.Kind != Int {
-		return Object{}, fmt.Errorf("Right operand must be an integer (%s)", rhs)
+		return None, fmt.Errorf("Right operand must be an integer (%s)", rhs)
 	}
 
 	lval := lhs.Val
@@ -89,21 +89,21 @@ func evalBinaryOp(list Object, env *Env) (Object, error) {
 		case "!=":
 			return BoolObject(lval != rval), nil
 		default:
-			return Object{}, fmt.Errorf("%s unsupported", op.Symbol)
+			return None, fmt.Errorf("%s unsupported", op.Symbol)
 		}
 	default:
-		return Object{}, fmt.Errorf("Operator must be a symbol")
+		return None, fmt.Errorf("Operator must be a symbol")
 	}
 }
 
 func evalIf(list Object, env *Env) (Object, error) {
 	if len(list.List) != 4 {
-		return Object{}, fmt.Errorf("Invalid number of arguments for if statement")
+		return None, fmt.Errorf("Invalid number of arguments for if statement")
 	}
 
 	cond_obj, _ := evalObj(list.List[1], env)
 	if cond_obj.Kind != Bool {
-		return Object{}, fmt.Errorf("Condition must be boolean")
+		return None, fmt.Errorf("Condition must be boolean")
 	}
 	cond := cond_obj.Bool
 
