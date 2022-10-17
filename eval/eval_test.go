@@ -63,6 +63,24 @@ func TestEval(t *testing.T) {
 				}),
 			expected: IntObject(10),
 		},
+		{
+			input: ListObject(
+				[]Object{
+					SymbolObject("<"),
+					IntObject(3),
+					IntObject(4),
+				}),
+			expected: BoolObject(true),
+		},
+		{
+			input: ListObject(
+				[]Object{
+					SymbolObject("="),
+					IntObject(3),
+					IntObject(4),
+				}),
+			expected: BoolObject(false),
+		},
 	}
 
 	for _, test := range tests {

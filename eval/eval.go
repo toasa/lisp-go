@@ -25,7 +25,7 @@ func evalList(list Object) (Object, error) {
 	switch head.Kind {
 	case Symbol:
 		switch head.Symbol {
-		case "+", "-", "*", "/":
+		case "+", "-", "*", "/", "<", ">", "=", "!=":
 			return evalBinaryOp(list)
 		}
 	default:
@@ -70,6 +70,14 @@ func evalBinaryOp(list Object) (Object, error) {
 			return IntObject(lval * rval), nil
 		case "/":
 			return IntObject(lval / rval), nil
+		case "<":
+			return BoolObject(lval < rval), nil
+		case ">":
+			return BoolObject(lval > rval), nil
+		case "=":
+			return BoolObject(lval == rval), nil
+		case "!=":
+			return BoolObject(lval != rval), nil
 		default:
 			return Object{}, fmt.Errorf("%s unsupported", op.Symbol)
 		}
