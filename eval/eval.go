@@ -13,6 +13,8 @@ func evalObj(obj Object) (Object, error) {
 	switch obj.Kind {
 	case Int:
 		return IntObject(obj.Val), nil
+	case Void:
+		return VoidObject(), nil
 	case List:
 		return evalList(obj)
 	}
@@ -35,6 +37,9 @@ func evalList(list Object) (Object, error) {
 	new_list := []Object{}
 	for _, elem := range list.List {
 		res, _ := evalObj(elem)
+		if res.Kind == Void {
+			continue
+		}
 		new_list = append(new_list, res)
 	}
 	return ListObject(new_list), nil
