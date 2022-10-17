@@ -1,6 +1,7 @@
 package eval
 
 import (
+	"lisp-go/env"
 	. "lisp-go/object"
 	"testing"
 )
@@ -9,6 +10,8 @@ type test struct {
 	input    Object
 	expected Object
 }
+
+var testEnv *env.Env = env.New()
 
 func TestEval(t *testing.T) {
 	tests := []test{
@@ -114,7 +117,7 @@ func TestEval(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		list, err := Eval(test.input)
+		list, err := Eval(test.input, testEnv)
 		if err != nil {
 			t.Errorf("Eval failed: %s", err)
 		}

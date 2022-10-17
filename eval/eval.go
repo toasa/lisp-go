@@ -2,37 +2,38 @@ package eval
 
 import (
 	"fmt"
+	. "lisp-go/env"
 	. "lisp-go/object"
 )
 
-func Eval(obj Object) (Object, error) {
-	return evalObj(obj)
+func Eval(obj Object, env *Env) (Object, error) {
+	return evalObj(obj, env)
 }
 
-func evalObj(obj Object) (Object, error) {
+func evalObj(obj Object, env *Env) (Object, error) {
 	switch obj.Kind {
 	case Int:
 		return IntObject(obj.Val), nil
 	case Void:
 		return VoidObject(), nil
 	case List:
-		return evalList(obj)
+		return evalList(obj, env)
 	case Bool:
 		return BoolObject(obj.Bool), nil
 	}
 	return Object{}, fmt.Errorf("Invalid Object: %s", obj)
 }
 
-func evalList(list Object) (Object, error) {
+func evalList(list Object, env *Env) (Object, error) {
 	head := list.List[0]
 
 	switch head.Kind {
 	case Symbol:
 		switch head.Symbol {
 		case "+", "-", "*", "/", "<", ">", "=", "!=":
-			return evalBinaryOp(list)
+			return evalBinaryOp(list, env)
 		case "if":
-			return evalIf(list)
+			return evalIf(list, env)
 		}
 	default:
 		return Object{}, fmt.Errorf("Unsupport list %s", list)
@@ -40,7 +41,7 @@ func evalList(list Object) (Object, error) {
 
 	new_list := []Object{}
 	for _, elem := range list.List {
-		res, _ := evalObj(elem)
+		res, _ := evalObj(elem, env)
 		if res.Kind == Void {
 			continue
 		}
@@ -49,14 +50,14 @@ func evalList(list Object) (Object, error) {
 	return ListObject(new_list), nil
 }
 
-func evalBinaryOp(list Object) (Object, error) {
+func evalBinaryOp(list Object, env *Env) (Object, error) {
 	if len(list.List) != 3 {
 		return Object{}, fmt.Errorf("Invalid number of arguments for infix operator")
 	}
 
 	op := list.List[0]
-	lhs, _ := evalObj(list.List[1])
-	rhs, _ := evalObj(list.List[2])
+	lhs, _ := evalObj(list.List[1], env)
+	rhs, _ := evalObj(list.List[2], env)
 
 	if lhs.Kind != Int {
 		return Object{}, fmt.Errorf("Left operand must be an integer (%s)", lhs)
@@ -95,20 +96,20 @@ func evalBinaryOp(list Object) (Object, error) {
 	}
 }
 
-func evalIf(list Object) (Object, error) {
+func evalIf(list Object, env *Env) (Object, error) {
 	if len(list.List) != 4 {
 		return Object{}, fmt.Errorf("Invalid number of arguments for if statement")
 	}
 
-	cond_obj, _ := evalObj(list.List[1])
+	cond_obj, _ := evalObj(list.List[1], env)
 	if cond_obj.Kind != Bool {
 		return Object{}, fmt.Errorf("Condition must be boolean")
 	}
 	cond := cond_obj.Bool
 
 	if cond {
-		return evalObj(list.List[2])
+		return evalObj(list.List[2], env)
 	} else {
-		return evalObj(list.List[3])
+		return evalObj(list.List[3], env)
 	}
 }
