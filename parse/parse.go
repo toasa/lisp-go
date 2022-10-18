@@ -10,7 +10,12 @@ func Parse(tokens []token.Token) (Object, error) {
 	return parseList(tokens)
 }
 
+// Preserve the tokens sequence that have been read when
+// parsing a nested list.
+var tmp []token.Token
+
 func parseList(tokens []token.Token) (Object, error) {
+
 	t := tokens[0]
 	if t.Kind != token.LParen {
 		return None, fmt.Errorf("Expected LParen, got %s", t)
@@ -27,7 +32,13 @@ func parseList(tokens []token.Token) (Object, error) {
 			list = append(list, IntObject(t.Val))
 		case token.Symbol:
 			list = append(list, SymbolObject(t.Symbol))
+		case token.LParen:
+			tokens = append([]token.Token{t}, tokens...)
+			sub_list, _ := parseList(tokens)
+			list = append(list, sub_list)
+			tokens = tmp
 		case token.RParen:
+			tmp = tokens
 			return ListObject(list), nil
 		default:
 			return None, fmt.Errorf("Invalid token %s", t)

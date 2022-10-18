@@ -43,6 +43,33 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: []token.Token{
+				token.LParenToken(),
+				token.SymbolToken("+"),
+				token.LParenToken(),
+				token.SymbolToken("*"),
+				token.IntToken(3),
+				token.IntToken(4),
+				token.RParenToken(),
+				token.IntToken(5),
+				token.RParenToken(),
+			},
+			expected: Object{
+				Kind: List,
+				List: []Object{
+					SymbolObject("+"),
+					ListObject(
+						[]Object{
+							SymbolObject("*"),
+							IntObject(3),
+							IntObject(4),
+						},
+					),
+					IntObject(5),
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
