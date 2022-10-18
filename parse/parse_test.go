@@ -19,12 +19,11 @@ func TestParse(t *testing.T) {
 				token.IntToken(10),
 				token.RParenToken(),
 			},
-			expected: Object{
-				Kind: List,
-				List: []Object{
+			expected: ListObject(
+				[]Object{
 					IntObject(10),
 				},
-			},
+			),
 		},
 		{
 			input: []token.Token{
@@ -34,14 +33,13 @@ func TestParse(t *testing.T) {
 				token.IntToken(3),
 				token.RParenToken(),
 			},
-			expected: Object{
-				Kind: List,
-				List: []Object{
+			expected: ListObject(
+				[]Object{
 					SymbolObject("+"),
 					IntObject(2),
 					IntObject(3),
 				},
-			},
+			),
 		},
 		{
 			input: []token.Token{
@@ -55,9 +53,8 @@ func TestParse(t *testing.T) {
 				token.IntToken(5),
 				token.RParenToken(),
 			},
-			expected: Object{
-				Kind: List,
-				List: []Object{
+			expected: ListObject(
+				[]Object{
 					SymbolObject("+"),
 					ListObject(
 						[]Object{
@@ -68,7 +65,7 @@ func TestParse(t *testing.T) {
 					),
 					IntObject(5),
 				},
-			},
+			),
 		},
 	}
 
