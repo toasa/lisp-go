@@ -50,8 +50,6 @@ func evalList(list Object, env *Env) (Object, error) {
 		}
 		return ListObject(new_list), nil
 	}
-
-	return None, fmt.Errorf("Failed to eval list")
 }
 
 func evalSymbol(s Object, env *Env) (Object, error) {
