@@ -36,18 +36,18 @@ func evalList(list Object, env *Env) (Object, error) {
 			return evalIf(list, env)
 		}
 	default:
-		return None, fmt.Errorf("Unsupport list %s", list)
+		new_list := []Object{}
+		for _, elem := range list.List {
+			res, _ := evalObj(elem, env)
+			if res.Kind == Void {
+				continue
+			}
+			new_list = append(new_list, res)
+		}
+		return ListObject(new_list), nil
 	}
 
-	new_list := []Object{}
-	for _, elem := range list.List {
-		res, _ := evalObj(elem, env)
-		if res.Kind == Void {
-			continue
-		}
-		new_list = append(new_list, res)
-	}
-	return ListObject(new_list), nil
+	return None, fmt.Errorf("Failed to eval list")
 }
 
 func evalBinaryOp(list Object, env *Env) (Object, error) {
