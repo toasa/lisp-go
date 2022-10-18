@@ -60,6 +60,64 @@ func TestEval(t *testing.T) {
 				},
 			),
 		},
+		{
+			input: `(
+				(define sqr (lambda (r) (* r r))) 
+				(sqr 11)
+			   )`,
+			expected: ListObject(
+				[]Object{
+					IntObject(121),
+				},
+			),
+		},
+		{
+			input: `(
+				(define f (lambda (a b c) (+ (* a b) c)))
+				(f 2 3 4)
+			   )`,
+			expected: ListObject(
+				[]Object{
+					IntObject(10),
+				},
+			),
+		},
+		{
+			input: `(
+		              (define fib (lambda (n) (if (< n 2) 1 (+ (fib (- n 1)) (fib (- n 2))))))
+		              (fib 10)
+		          )`,
+			expected: ListObject(
+				[]Object{
+					IntObject(89),
+				},
+			),
+		},
+		{
+			input: `(
+                (define fact (lambda (n) (if (< n 1) 1 (* n (fact (- n 1))))))
+                (fact 5)
+            )`,
+			expected: ListObject(
+				[]Object{
+					IntObject(5 * 4 * 3 * 2 * 1),
+				},
+			),
+		},
+		{
+			input: `(
+                (define pi 314)
+                (define r 10)
+                (define sqr (lambda (r) (* r r)))
+                (define area (lambda (r) (* pi (sqr r))))
+                (area r)
+            )`,
+			expected: ListObject(
+				[]Object{
+					IntObject(314 * 10 * 10),
+				},
+			),
+		},
 	}
 
 	for _, test := range tests {

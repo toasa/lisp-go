@@ -26,8 +26,8 @@ type Object struct {
 }
 
 type LambdaObject struct {
-	params []string
-	body   []Object
+	Params []string
+	Body   []Object
 }
 
 var None Object = Object{}
@@ -77,21 +77,21 @@ func Equal(o1, o2 Object) bool {
 	case Bool:
 		return o1.Bool == o2.Bool
 	case Lambda:
-		if len(o1.Lambda.params) != len(o2.Lambda.params) {
+		if len(o1.Lambda.Params) != len(o2.Lambda.Params) {
 			return false
 		}
-		for i, param1 := range o1.Lambda.params {
-			param2 := o2.Lambda.params[i]
+		for i, param1 := range o1.Lambda.Params {
+			param2 := o2.Lambda.Params[i]
 			if param1 != param2 {
 				return false
 			}
 		}
 
-		if len(o1.Lambda.body) != len(o2.Lambda.body) {
+		if len(o1.Lambda.Body) != len(o2.Lambda.Body) {
 			return false
 		}
-		for i, expr1 := range o1.Lambda.body {
-			expr2 := o2.Lambda.body[i]
+		for i, expr1 := range o1.Lambda.Body {
+			expr2 := o2.Lambda.Body[i]
 			if !Equal(expr1, expr2) {
 				return false
 			}
@@ -137,13 +137,13 @@ func (o Object) String() string {
 func (l LambdaObject) String() string {
 	var b strings.Builder
 	b.WriteString("Lambda(")
-	for _, param := range l.params {
+	for _, param := range l.Params {
 		b.WriteString(param)
 		b.WriteString(" ")
 	}
 	b.WriteString(")")
 
-	for _, expr := range l.body {
+	for _, expr := range l.Body {
 		b.WriteString(expr.String())
 	}
 

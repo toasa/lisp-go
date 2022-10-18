@@ -38,6 +38,10 @@ func evalList(list Object, env *Env) (Object, error) {
 			return evalIf(list, env)
 		case "define":
 			return evalDef(list, env)
+		case "lambda":
+			return evalFuncDef(list)
+		default:
+			return evalFuncCall(list, env)
 		}
 	default:
 		new_list := []Object{}
@@ -136,4 +140,56 @@ func evalDef(list Object, env *Env) (Object, error) {
 	val, _ := evalObj(list.List[2], env)
 	env.Set(key.Symbol, val)
 	return VoidObject(), nil
+}
+
+func evalFuncDef(list Object) (Object, error) {
+	if list.List[1].Kind != List {
+		return None, fmt.Errorf("Invalid lambda")
+	}
+
+	params := []string{}
+	for _, param := range list.List[1].List {
+		if param.Kind != Symbol {
+			return None, fmt.Errorf("Invalid lambda parameter")
+		}
+		params = append(params, param.Symbol)
+	}
+
+	if list.List[2].Kind != List {
+		return None, fmt.Errorf("Invalid lamnda body")
+	}
+	body := list.List[2].List
+
+	lambda := Object{
+		Kind: Lambda,
+		Lambda: LambdaObject{
+			Params: params,
+			Body:   body,
+		},
+	}
+
+	return lambda, nil
+}
+
+func evalFuncCall(list Object, env *Env) (Object, error) {
+	fname := list.List[0].Symbol
+
+	f, ok := env.Get(fname)
+	if !ok {
+		return None, fmt.Errorf("Unbound symbol: %s", fname)
+	}
+
+	if f.Kind != Lambda {
+		return None, fmt.Errorf("Not a lambda: %s", f)
+	}
+
+	newEnv := Extend(env)
+
+	lambda := f.Lambda
+	for i, param := range lambda.Params {
+		arg, _ := evalObj(list.List[i+1], env)
+		newEnv.Set(param, arg)
+	}
+
+	return evalObj(ListObject(lambda.Body), newEnv)
 }
