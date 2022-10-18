@@ -3,11 +3,13 @@ package eval
 import (
 	"lisp-go/env"
 	. "lisp-go/object"
+	"lisp-go/parse"
+	"lisp-go/token"
 	"testing"
 )
 
 type test struct {
-	input    Object
+	input    string
 	expected Object
 }
 
@@ -16,108 +18,47 @@ var testEnv *env.Env = env.New()
 func TestEval(t *testing.T) {
 	tests := []test{
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("+"),
-					IntObject(10),
-					IntObject(20),
-				}),
+			input:    "(+ 10 20)",
 			expected: IntObject(30),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("+"),
-					ListObject(
-						[]Object{
-							SymbolObject("+"),
-							IntObject(3),
-							IntObject(4),
-						}),
-					IntObject(5),
-				}),
+			input:    "(+ (+ 3 4) 5)",
 			expected: IntObject(12),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("+"),
-					IntObject(2),
-					ListObject(
-						[]Object{
-							SymbolObject("*"),
-							IntObject(3),
-							IntObject(4),
-						}),
-				}),
+			input:    "(+ 2 (* 3 4))",
 			expected: IntObject(14),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("+"),
-					ListObject(
-						[]Object{
-							SymbolObject("*"),
-							IntObject(2),
-							IntObject(3),
-						}),
-					IntObject(4),
-				}),
+			input:    "(+ (* 2 3) 4)",
 			expected: IntObject(10),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("<"),
-					IntObject(3),
-					IntObject(4),
-				}),
+			input:    "(< 3 4)",
 			expected: BoolObject(true),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("="),
-					IntObject(3),
-					IntObject(4),
-				}),
+			input:    "(= 3 4)",
 			expected: BoolObject(false),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("if"),
-					ListObject(
-						[]Object{
-							SymbolObject("<"),
-							IntObject(3),
-							IntObject(4),
-						}),
-					IntObject(10),
-					IntObject(20),
-				}),
+			input:    "(if (< 3 4) 10 20)",
 			expected: IntObject(10),
 		},
 		{
-			input: ListObject(
-				[]Object{
-					SymbolObject("if"),
-					ListObject(
-						[]Object{
-							SymbolObject(">"),
-							IntObject(3),
-							IntObject(4),
-						}),
-					IntObject(10),
-					IntObject(20),
-				}),
+			input:    "(if (> 3 4) 10 20)",
 			expected: IntObject(20),
 		},
 	}
 
 	for _, test := range tests {
-		list, err := Eval(test.input, testEnv)
+		tokens := token.Tokenize(test.input)
+		obj, err := parse.Parse(tokens)
+		if err != nil {
+			t.Errorf("Parse failed: %s", err)
+		}
+
+		list, err := Eval(obj, testEnv)
 		if err != nil {
 			t.Errorf("Eval failed: %s", err)
 		}
