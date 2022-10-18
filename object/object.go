@@ -13,6 +13,7 @@ const (
 	List
 	Symbol
 	Bool
+	Lambda
 )
 
 type Object struct {
@@ -21,6 +22,12 @@ type Object struct {
 	List   []Object
 	Symbol string
 	Bool   bool
+	Lambda LambdaObject
+}
+
+type LambdaObject struct {
+	params []string
+	body   []Object
 }
 
 var None Object = Object{}
@@ -69,6 +76,28 @@ func Equal(o1, o2 Object) bool {
 		return o1.Symbol == o2.Symbol
 	case Bool:
 		return o1.Bool == o2.Bool
+	case Lambda:
+		if len(o1.Lambda.params) != len(o2.Lambda.params) {
+			return false
+		}
+		for i, param1 := range o1.Lambda.params {
+			param2 := o2.Lambda.params[i]
+			if param1 != param2 {
+				return false
+			}
+		}
+
+		if len(o1.Lambda.body) != len(o2.Lambda.body) {
+			return false
+		}
+		for i, expr1 := range o1.Lambda.body {
+			expr2 := o2.Lambda.body[i]
+			if !Equal(expr1, expr2) {
+				return false
+			}
+		}
+
+		return true
 	}
 
 	// (TODO?) Invalid object type, how to handle it?
@@ -98,7 +127,25 @@ func (o Object) String() string {
 		return o.Symbol
 	case Bool:
 		return fmt.Sprintf("%v", o.Bool)
+	case Lambda:
+		return o.Lambda.String()
 	default:
 		return ""
 	}
+}
+
+func (l LambdaObject) String() string {
+	var b strings.Builder
+	b.WriteString("Lambda(")
+	for _, param := range l.params {
+		b.WriteString(param)
+		b.WriteString(" ")
+	}
+	b.WriteString(")")
+
+	for _, expr := range l.body {
+		b.WriteString(expr.String())
+	}
+
+	return b.String()
 }
