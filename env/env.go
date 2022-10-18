@@ -10,7 +10,10 @@ type Env struct {
 }
 
 func New() *Env {
-	return &Env{Vars: make(map[string]Object)}
+	return &Env{
+		Parent: nil,
+		Vars:   make(map[string]Object),
+	}
 }
 
 func Extend(parent *Env) *Env {
@@ -19,9 +22,15 @@ func Extend(parent *Env) *Env {
 	return newE
 }
 
-func (e Env) Get(key string) (Object, bool) {
-	v, ok := e.Vars[key]
-	return v, ok
+func (e *Env) Get(key string) (Object, bool) {
+	if e == nil {
+		return None, false
+	}
+
+	if v, ok := e.Vars[key]; ok {
+		return v, ok
+	}
+	return e.Parent.Get(key)
 }
 
 func (e *Env) Set(key string, val Object) {
