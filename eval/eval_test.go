@@ -49,6 +49,17 @@ func TestEval(t *testing.T) {
 			input:    "(if (> 3 4) 10 20)",
 			expected: IntObject(20),
 		},
+		{
+			input: `(
+				(define x 11)
+				(* x x))
+				)`,
+			expected: ListObject(
+				[]Object{
+					IntObject(121),
+				},
+			),
+		},
 	}
 
 	for _, test := range tests {

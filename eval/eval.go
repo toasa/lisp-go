@@ -18,6 +18,8 @@ func evalObj(obj Object, env *Env) (Object, error) {
 		return VoidObject(), nil
 	case List:
 		return evalList(obj, env)
+	case Symbol:
+		return evalSymbol(obj, env)
 	case Bool:
 		return BoolObject(obj.Bool), nil
 	}
@@ -34,6 +36,8 @@ func evalList(list Object, env *Env) (Object, error) {
 			return evalBinaryOp(list, env)
 		case "if":
 			return evalIf(list, env)
+		case "define":
+			return evalDef(list, env)
 		}
 	default:
 		new_list := []Object{}
@@ -48,6 +52,14 @@ func evalList(list Object, env *Env) (Object, error) {
 	}
 
 	return None, fmt.Errorf("Failed to eval list")
+}
+
+func evalSymbol(s Object, env *Env) (Object, error) {
+	val, ok := env.Get(s.Symbol)
+	if !ok {
+		return None, fmt.Errorf("Unbound symbol: %s", s)
+	}
+	return val, nil
 }
 
 func evalBinaryOp(list Object, env *Env) (Object, error) {
@@ -112,4 +124,18 @@ func evalIf(list Object, env *Env) (Object, error) {
 	} else {
 		return evalObj(list.List[3], env)
 	}
+}
+
+func evalDef(list Object, env *Env) (Object, error) {
+	if len(list.List) != 3 {
+		return None, fmt.Errorf("Invalid number of arguments for define")
+	}
+
+	key := list.List[1]
+	if key.Kind != Symbol {
+		return None, fmt.Errorf("Define key must be symbol")
+	}
+	val, _ := evalObj(list.List[2], env)
+	env.Set(key.Symbol, val)
+	return VoidObject(), nil
 }
